@@ -25,12 +25,12 @@ case "$1" in
     do
       # Only run this script for the master branch. You can remove this
       # if block if you wish to run it for others as well.
-      if [[ $refname = "refs/heads/master" ]] ; then
-        git_archive_all $APP $newrev | dokku receive $APP | sed -u "s/^/"$'\e[1G'"/"
-      else
-        echo $'\e[1G\e[K'"-----> WARNING: deploy did not complete, you must push to master."
-        echo $'\e[1G\e[K'"-----> for example, try 'git push <dokku> ${refname/refs\/heads\/}:master'"
-      fi
+      # if [[ $refname = "refs/heads/master" ]] ; then
+        git_archive_all $APP.${refname:11} $newrev | dokku receive $APP.${refname:11} | sed -u "s/^/"$'\e[1G'"/"
+      # else
+      #   echo $'\e[1G\e[K'"-----> WARNING: deploy did not complete, you must push to master."
+      #   echo $'\e[1G\e[K'"-----> for example, try 'git push <dokku> ${refname/refs\/heads\/}:master'"
+      # fi
     done
     ;;
 
