@@ -30,7 +30,7 @@ case "$1" in
   domains:setup)
     [[ -z $2 ]] && echo "Please specify an app to run the command on" && exit 1
     [[ ! -d "$DOKKU_ROOT/$2" ]] && echo "App $2 does not exist" && exit 1
-    APP="$2"; VHOST_PATH="$DOKKU_ROOT/$APP/VHOST"
+    APP="$2"; BRANCH="$3"; BRANCH_DIR="$DOKKU_ROOT/$APP/DOKKU/$BRANCH"; VHOST_PATH="$DOKKU_ROOT/$APP/VHOST"
 
     if [[ ! -f $VHOST_PATH ]]; then
       if [[ -f "$DOKKU_ROOT/VHOST" ]];then
@@ -40,7 +40,7 @@ case "$1" in
       fi
       if [[ "$VHOST" =~ $RE_IPV4 ]] || [[ "$VHOST" =~ $RE_IPV6 ]];then
         echo "unsupported vhost config found. disabling vhost support"
-        [[ ! $(grep -q NO_VHOST "$DOKKU_ROOT/$APP/ENV") ]] && echo "export NO_VHOST='1'" >> "$DOKKU_ROOT/$APP/ENV"
+        [[ ! $(grep -q NO_VHOST "$BRANCH_DIR/ENV") ]] && echo "export NO_VHOST='1'" >> "$BRANCH_DIR/ENV"
       else
         if [[ -f "$DOKKU_ROOT/VHOST" ]]; then
           echo "-----> Creating new $VHOST_PATH..."

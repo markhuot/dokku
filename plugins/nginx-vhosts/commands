@@ -15,21 +15,21 @@ restart_nginx () {
 
 case "$1" in
   nginx:build-config)
-    APP="$2"; DOKKU_APP_LISTEN_PORT="$3"; DOKKU_APP_LISTEN_IP="${4}"
-    VHOST_PATH="$DOKKU_ROOT/$APP/VHOST"
+    APP="$2"; BRANCH="$3"; BRANCH_DIR="$DOKKU_ROOT/$APP/DOKKU/$BRANCH"; DOKKU_APP_LISTEN_PORT="$4"; DOKKU_APP_LISTEN_IP="${4}"
+    VHOST_PATH="$BRANCH_DIR/VHOST"
     WILDCARD_SSL="$DOKKU_ROOT/tls"
-    SSL="$DOKKU_ROOT/$APP/tls"
+    SSL="$BRANCH_DIR/tls"
 
-    if [[ -z "$DOKKU_APP_LISTEN_PORT" ]] && [[ -f "$DOKKU_ROOT/$APP/PORT" ]]; then
-      DOKKU_APP_LISTEN_PORT=$(< "$DOKKU_ROOT/$APP/PORT")
+    if [[ -z "$DOKKU_APP_LISTEN_PORT" ]] && [[ -f "$BRANCH_DIR/PORT" ]]; then
+      DOKKU_APP_LISTEN_PORT=$(< "$BRANCH_DIR/PORT")
     fi
-    if [[ -z "$DOKKU_APP_LISTEN_IP" ]] && [[ -f "$DOKKU_ROOT/$APP/IP" ]]; then
-      DOKKU_APP_LISTEN_IP=$(< "$DOKKU_ROOT/$APP/IP")
+    if [[ -z "$DOKKU_APP_LISTEN_IP" ]] && [[ -f "$BRANCH_DIR/IP" ]]; then
+      DOKKU_APP_LISTEN_IP=$(< "$BRANCH_DIR/IP")
     fi
 
-    [[ -f "$DOKKU_ROOT/$APP/ENV" ]] && source $DOKKU_ROOT/$APP/ENV
+    [[ -f "$BRANCH_DIR/ENV" ]] && source $BRANCH_DIR/ENV
 
-    if [[ ! -n "$NO_VHOST" ]] && [[ -f "$DOKKU_ROOT/$APP/VHOST" ]]; then
+    if [[ ! -n "$NO_VHOST" ]] && [[ -f "$BRANCH_DIR/VHOST" ]]; then
       NONSSL_VHOSTS=$(cat $VHOST_PATH)
       if [[ -e "$SSL/server.crt" ]] && [[ -e "$SSL/server.key" ]]; then
         SSL_INUSE="$SSL"

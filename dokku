@@ -49,7 +49,7 @@ case "$1" in
 
   build)
     APP="$2"; BRANCH="$3"; BRANCH_DIR="$DOKKU_ROOT/$APP/DOKKU/$BRANCH"; IMAGE="dokku/$APP"; CACHE_DIR="$BRANCH_DIR/cache"
-    [[ -d $BRANCH_DIR ]] || mkdir $BRANCH_DIR
+    [[ -d $BRANCH_DIR ]] || mkdir -p $BRANCH_DIR
     id=$(cat | docker run -i -a stdin $DOKKU_IMAGE /bin/bash -c "mkdir -p /app && tar -xC /app")
     test "$(docker wait $id)" -eq 0
     docker commit $id $IMAGE > /dev/null
@@ -67,7 +67,7 @@ case "$1" in
 
   release)
     APP="$2"; BRANCH="$3"; BRANCH_DIR="$DOKKU_ROOT/$APP/DOKKU/$BRANCH"; IMAGE="dokku/$APP"
-    [[ -d $BRANCH_DIR ]] || mkdir $BRANCH_DIR
+    [[ -d $BRANCH_DIR ]] || mkdir -p $BRANCH_DIR
     pluginhook pre-release $APP
     if [[ -f "$BRANCH_DIR/ENV" ]]; then
       id=$(docker run -i -a stdin $IMAGE /bin/bash -c "mkdir -p /app/.profile.d && cat > /app/.profile.d/app-env.sh" < "$BRANCH_DIR/ENV")
@@ -79,10 +79,10 @@ case "$1" in
 
   deploy)
     APP="$2"; BRANCH="$3"; BRANCH_DIR="$DOKKU_ROOT/$APP/DOKKU/$BRANCH" IMAGE="dokku/$APP"
-    [[ -d $BRANCH_DIR ]] || mkdir $BRANCH_DIR
+    [[ -d $BRANCH_DIR ]] || mkdir -p $BRANCH_DIR
     pluginhook pre-deploy $APP
-    
-    [[ -d $BRANCH_DIR ]] || mkdir $BRANCH_DIR
+
+    [[ -d $BRANCH_DIR ]] || mkdir -p $BRANCH_DIR
 
     if [[ -f "$BRANCH_DIR/CONTAINER" ]]; then
       oldid=$(< "$BRANCH_DIR/CONTAINER")
@@ -121,7 +121,7 @@ case "$1" in
     echo "http://$(< "$DOKKU_ROOT/HOSTNAME"):$port" > "$BRANCH_DIR/URL"
 
     echo "-----> Running post-deploy"
-    pluginhook post-deploy  $APP $port $ipaddr
+    pluginhook post-deploy $APP $BRANCH $port $ipaddr
     trap -        INT TERM EXIT
 
     # kill the old container
